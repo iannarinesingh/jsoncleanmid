@@ -8,6 +8,7 @@ def home():
     return "✅ Middleware is running and ready to receive Monnit data."
 def webhook():
     data = request.get_json()
+    print("Received data:",  data)
     
     target_sensor_id = '1275050'
     results = []
