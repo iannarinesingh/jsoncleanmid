@@ -57,7 +57,7 @@ def webhook():
             value = sensor.get('plotValues')
             timestamp = sensor.get('messageDate')
 
-            cleaned_data = {
+            cleaned_data = "gatewayMessage":{
                 "distance_cm": value
                 ,"timestamp": timestamp
                 }
