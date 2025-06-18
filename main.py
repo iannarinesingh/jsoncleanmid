@@ -59,8 +59,7 @@ def webhook():
 
             cleaned_data = {
                 "distance_cm": value
-                },
-                "timestamp": timestamp
+                ,"timestamp": timestamp
                 }
                 
               #cleaned_data = 
@@ -69,17 +68,9 @@ def webhook():
               #      "distance_cm": value
               #  },
               #  "timestamp": timestamp
-                
-        
-                   
-                
-                
-                
-                
-                
-                
-                
-            }
+             
+ 
+            
             # send to Fogwing
             mqtt_client.publish(MQTT_TOPIC, json.dumps(cleaned_data))
             print("✅ Published to Fogwing:", json.dumps(cleaned_data))
