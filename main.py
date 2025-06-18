@@ -15,8 +15,22 @@ MQTT_TOPIC = "fwent/edge/7a6e91607a6954d2/inbound"
 mqtt_client = mqtt.Client()
 # Use TLS for secure connection
 mqtt_client.tls_set()
-mqtt_client = mqtt.Client(client_id="1151207727855193")
+mqtt_client = mqtt.Client(client_id="1151-2077-2785-5193")
 mqtt_client.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
+
+def on_connect(client, userdata, flags, rc):
+    print("🟢 Connected with result code", rc)
+    if rc == 0:
+        print("✅ Connection successful")
+    else:
+        print("❌ Connection failed — Code:", rc)
+
+def on_disconnect(client, userdata, rc):
+    print("🔌 Disconnected with result code", rc)
+
+mqtt_client.on_connect = on_connect
+mqtt_client.on_disconnect = on_disconnect
+
 mqtt_client.connect(MQTT_BROKER, MQTT_PORT)
 
 
