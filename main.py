@@ -57,12 +57,28 @@ def webhook():
             value = sensor.get('plotValues')
             timestamp = sensor.get('messageDate')
 
-            cleaned_data = {
-                "deviceId": sensor_id,
-                "data": {
-                    "distance_cm": value
-                },
-                "timestamp": timestamp
+            #cleaned_data = {
+             #   "deviceId": sensor_id,
+              #  "data": {
+               #     "distance_cm": value
+                #},
+                #"timestamp": timestamp
+                
+                
+                
+               cleaned_data = {
+               "data": {
+                    "distance_cm": value}
+                }
+            
+                   
+                
+                
+                
+                
+                
+                
+                
             }
             # send to Fogwing
             mqtt_client.publish(MQTT_TOPIC, json.dumps(cleaned_data))
