@@ -7,9 +7,9 @@ app = Flask(__name__)
 # === MQTT Config ===
 MQTT_BROKER = "iothub.fogwing.net"
 MQTT_PORT = 8883
-MQTT_USERNAME = "955374c0259591f7"
-MQTT_PASSWORD = "Bmffdkkp4$"
-MQTT_TOPIC = "fwent/edge/955374c0259591f7/inbound"
+MQTT_USERNAME = "7a6e91607a6954d2"
+MQTT_PASSWORD = "Upvevwcf2&"
+MQTT_TOPIC = "fwent/edge/7a6e91607a6954d2/inbound"
 
 # === Connect to MQTT ===
 mqtt_client = mqtt.Client()
