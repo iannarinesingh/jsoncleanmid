@@ -3,6 +3,9 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 @app.route('/webhook', methods=['POST'])
+@app.route('/')
+def home():
+    return "✅ Middleware is running and ready to receive Monnit data."
 def webhook():
     data = request.get_json()
     
