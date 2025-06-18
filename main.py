@@ -59,13 +59,13 @@ def webhook():
 
 
                 
-            cleaned_data = {
-                "gatewayMessage": {
-                "distance_cm": value,
-                "timestamp": timestamp
-                }
+        cleaned_data = {
+            "deviceId": "1275050",
+            "timestamp": "2025-06-18 22:12:36",
+            "data": {
+                "distance_cm": "28"
             }
-             
+        }
  
             
             # send to Fogwing
