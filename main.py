@@ -11,8 +11,7 @@ def home():
 def webhook():
     data = request.get_json()
     print("Received data:",  data)
-    return jsonify(data), 200
-    
+      
     target_sensor_id = '1275050'
     results = []
 
