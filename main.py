@@ -1,6 +1,21 @@
 from flask import Flask, request, jsonify
+import paho.mqtt.client as mqtt
+import json
 
 app = Flask(__name__)
+
+# === MQTT Config ===
+MQTT_BROKER = "iothub.fogwing.net"
+MQTT_PORT = 8883
+MQTT_USERNAME = "955374c0259591f7"
+MQTT_PASSWORD = "Bmffdkkp4$"
+MQTT_TOPIC = "fwent/edge/955374c0259591f7/inbound"
+
+# === Connect to MQTT ===
+mqtt_client = mqtt.Client()
+mqtt_client.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
+mqtt_client.connect(MQTT_BROKER, MQTT_PORT)
+
 
 
 @app.route('/')
@@ -12,6 +27,7 @@ def webhook():
     data = request.get_json()
     print("Received data:",  data)
       
+    #This is the sensor ID of the desired MONNIT sensor
     target_sensor_id = '1275050'
     results = []
 
@@ -30,7 +46,10 @@ def webhook():
                 },
                 "timestamp": timestamp
             }
-
+            # send to Fogwing
+            mqtt_client.publish(MQTT_TOPIC, json.dumps(payload))
+            print("✅ Published to Fogwing:", payload)
+            
             results.append(cleaned_data)
             print(cleaned_data)  # Later: publish to Fogwing here
 
