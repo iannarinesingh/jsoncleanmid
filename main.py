@@ -10,13 +10,14 @@ MQTT_PORT = 8883
 MQTT_USERNAME = "7a6e91607a6954d2"
 MQTT_PASSWORD = "Upvevwcf2&"
 MQTT_TOPIC = "fwent/edge/7a6e91607a6954d2/inbound"
+CLIENT_ID = "1151-2077-2785-5193"
 
 # === Connect to MQTT ===
-mqtt_client = mqtt.Client()
+mqtt_client = mqtt.Client(client_id=CLIENT_ID)
+mqtt_client.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
 # Use TLS for secure connection
 mqtt_client.tls_set()
-mqtt_client = mqtt.Client(client_id="1151-2077-2785-5193")
-mqtt_client.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
+
 
 def on_connect(client, userdata, flags, rc):
     print("🟢 Connected with result code", rc)
