@@ -33,7 +33,7 @@ mqtt_client.on_connect = on_connect
 mqtt_client.on_disconnect = on_disconnect
 
 mqtt_client.connect(MQTT_BROKER, MQTT_PORT)
-
+mqtt_client.loop_start()  # 🔄 Starts background thread for MQTT
 
 
 @app.route('/')
