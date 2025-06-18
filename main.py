@@ -13,6 +13,9 @@ MQTT_TOPIC = "fwent/edge/7a6e91607a6954d2/inbound"
 
 # === Connect to MQTT ===
 mqtt_client = mqtt.Client()
+# Use TLS for secure connection
+mqtt_client.tls_set()
+
 mqtt_client.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
 mqtt_client.connect(MQTT_BROKER, MQTT_PORT)
 
