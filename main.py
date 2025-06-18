@@ -2,13 +2,16 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-@app.route('/webhook', methods=['POST'])
+
 @app.route('/')
 def home():
     return "✅ Middleware is running and ready to receive Monnit data."
+
+@app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.get_json()
     print("Received data:",  data)
+    return jsonify(data), 200
     
     target_sensor_id = '1275050'
     results = []
