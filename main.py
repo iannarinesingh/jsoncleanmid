@@ -47,7 +47,7 @@ def webhook():
                 "timestamp": timestamp
             }
             # send to Fogwing
-            mqtt_client.publish(MQTT_TOPIC, json.dumps(payload))
+            mqtt_client.publish(MQTT_TOPIC, json.dumps(cleaned_data))
             print("✅ Published to Fogwing:", payload)
             
             results.append(cleaned_data)
