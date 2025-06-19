@@ -59,7 +59,7 @@ def webhook():
             timestamp = sensor.get('messageDate')
 
 
-            if connected:    
+              
                 cleaned_data = {
                     "deviceId": "1275050",
                     "timestamp": "2025-06-18 22:12:36",
@@ -67,14 +67,15 @@ def webhook():
                         "distance_cm": "28"
                     }   
                 }
+            
+              
+             if connected: 
+                 # send to Fogwing
+                mqtt_client.publish(MQTT_TOPIC, json.dumps(cleaned_data))
+                print("✅ Published to Fogwing:", json.dumps(cleaned_data))
             else:
-                print("MQTT not connected - cannot send data")
-            
-            # send to Fogwing
-            mqtt_client.publish(MQTT_TOPIC, json.dumps(cleaned_data))
-            print("✅ Published to Fogwing:", json.dumps(cleaned_data))
-            
-            results.append(cleaned_data)
+                  print("MQTT not connected - cannot send data")
+            #results.append(cleaned_data)
             #print(cleaned_data)  # Later: publish to Fogwing here
 
     return jsonify({"status": "success", "processed": len(results)}), 200
