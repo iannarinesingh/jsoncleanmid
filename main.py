@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 # ========== MQTT CONFIG ==========
 MQTT_BROKER = "iothub.fogwing.net"
-MQTT_PORT = 8883
+MQTT_PORT = 1883
 MQTT_USERNAME = "7a6e91607a6954d2"
 MQTT_PASSWORD = "Upvevwcf2&"
 CLIENT_ID = "1151-2077-2785-5193"
@@ -18,7 +18,7 @@ MQTT_TOPIC = "fwent/edge/7a6e91607a6954d2/inbound"
 # ========== MQTT CLIENT SETUP ==========
 mqtt_client = mqtt.Client(client_id=CLIENT_ID)
 mqtt_client.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
-mqtt_client.tls_set(cert_reqs=ssl.CERT_REQUIRED)
+#mqtt_client.tls_set(cert_reqs=ssl.CERT_REQUIRED)
 
 is_connected = False
 
@@ -39,14 +39,27 @@ mqtt_client.on_connect = on_connect
 mqtt_client.on_disconnect = on_disconnect
 
 def start_mqtt():
+    global is_connected
     while True:
         try:
-            print("🔄 Attempting MQTT connect...")
+            print("🔄 Attempting to connect to MQTT broker:", MQTT_BROKER)
             mqtt_client.connect(MQTT_BROKER, MQTT_PORT)
-            mqtt_client.loop_forever()
+            mqtt_client.loop_start()
+
+            # Wait to establish connection
+            for i in range(10):
+                if is_connected:
+                    print("✅ MQTT Connected inside thread")
+                    return
+                print(f"⏳ Waiting for MQTT connection... ({i+1}/10)")
+                time.sleep(1)
+
+            print("❌ Timeout: MQTT did not connect within 10 seconds.")
         except Exception as e:
-            print(f"🔥 MQTT connection error: {e}")
-            time.sleep(10)
+            print("🔥 MQTT connection exception:", str(e))
+
+        print("⏲️ Retry MQTT connection in 10 seconds...")
+        time.sleep(10)
 
 # ========== ROUTES ==========
 @app.route('/')
