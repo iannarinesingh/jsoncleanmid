@@ -69,7 +69,7 @@ def webhook():
             }
             
               
-             if connected: 
+            if connected: 
                  # send to Fogwing
                 mqtt_client.publish(MQTT_TOPIC, json.dumps(cleaned_data))
                 print("✅ Published to Fogwing:", json.dumps(cleaned_data))
