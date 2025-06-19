@@ -20,6 +20,7 @@ mqtt_client.tls_set()
 
 
 def on_connect(client, userdata, flags, rc):
+    global connected
     print("🟢 Connected with result code", rc)
     if rc == 0:
         print("✅ Connection successful")
@@ -58,15 +59,16 @@ def webhook():
             timestamp = sensor.get('messageDate')
 
 
-                
-            cleaned_data = {
-                "deviceId": "1275050",
-                "timestamp": "2025-06-18 22:12:36",
-                "data": {
-                    "distance_cm": "28"
-                }   
-            }
- 
+            if connected:    
+                cleaned_data = {
+                    "deviceId": "1275050",
+                    "timestamp": "2025-06-18 22:12:36",
+                    "data": {
+                        "distance_cm": "28"
+                    }   
+                }
+            else
+                print("MQTT not connected - cannot send data")
             
             # send to Fogwing
             mqtt_client.publish(MQTT_TOPIC, json.dumps(cleaned_data))
