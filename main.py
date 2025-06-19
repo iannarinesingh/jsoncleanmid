@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify
 import paho.mqtt.client as mqtt
+import ssl
 import json
+import time
 
 app = Flask(__name__)
 
@@ -12,31 +14,39 @@ MQTT_PASSWORD = "Upvevwcf2&"
 MQTT_TOPIC = "fwent/edge/7a6e91607a6954d2/inbound"
 CLIENT_ID = "1151-2077-2785-5193"
 
-# === Connect to MQTT ===
-mqtt_client = mqtt.Client(client_id=CLIENT_ID)
-mqtt_client.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
-# Use TLS for secure connection
-mqtt_client.tls_set()
+connected = False
 
-
+# === MQTT Callbacks ===
 def on_connect(client, userdata, flags, rc):
     global connected
-    print("🟢 Connected with result code", rc)
+    print("🟢 MQTT connected with result code:", rc)
     if rc == 0:
+        connected = True
         print("✅ Connection successful")
     else:
         print("❌ Connection failed — Code:", rc)
 
 def on_disconnect(client, userdata, rc):
-    print("🔌 Disconnected with result code", rc)
+    global connected
+    connected = False
+    print("🔌 Disconnected with result code:", rc)
+
+def on_log(client, userdata, level, buf):
+    print("🔍 MQTT Log:", buf)
+
+# === MQTT Client Setup ===
+mqtt_client = mqtt.Client(client_id=CLIENT_ID, clean_session=False)
+mqtt_client.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
+mqtt_client.tls_set(tls_version=ssl.PROTOCOL_TLSv1_2)
 
 mqtt_client.on_connect = on_connect
 mqtt_client.on_disconnect = on_disconnect
+mqtt_client.on_log = on_log
 
-mqtt_client.connect(MQTT_BROKER, MQTT_PORT)
-mqtt_client.loop_start()  # 🔄 Starts background thread for MQTT
+mqtt_client.connect(MQTT_BROKER, MQTT_PORT, keepalive=60)
+mqtt_client.loop_start()
 
-
+# === Flask Routes ===
 @app.route('/')
 def home():
     return "✅ Middleware is running and ready to receive Monnit data."
@@ -44,38 +54,40 @@ def home():
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.get_json()
-    print("Received data:",  data)
-      
-    #This is the sensor ID of the desired MONNIT sensor
+    print("📥 Received data:", data)
+
     target_sensor_id = '1275050'
     results = []
 
     for sensor in data.get('sensorMessages', []):
         sensor_id = sensor.get('sensorID')
-        print("Checking sensor ID:", sensor.get('sensorID'))
+        print("🔎 Checking sensor ID:", sensor_id)
+
         if sensor_id == target_sensor_id:
-            print("MATCHED!")
+            print("🎯 MATCHED SENSOR:", sensor_id)
+
             value = sensor.get('plotValues')
             timestamp = sensor.get('messageDate')
 
+            # Convert timestamp to ISO8601
+            iso_timestamp = timestamp.replace(" ", "T") + "Z"
 
-              
             cleaned_data = {
-                "deviceId": "1275050",
-                "timestamp": "2025-06-18 22:12:36",
-                    "data": {
-                        "distance_cm": "28"
-                }   
+                "deviceId": sensor_id,
+                "timestamp": iso_timestamp,
+                "data": {
+                    "distance_cm": value
+                }
             }
-            
-              
-            if connected: 
-                 # send to Fogwing
-                mqtt_client.publish(MQTT_TOPIC, json.dumps(cleaned_data))
-                print("✅ Published to Fogwing:", json.dumps(cleaned_data))
+
+            if connected:
+                payload = json.dumps(cleaned_data)
+                result = mqtt_client.publish(MQTT_TOPIC, payload, qos=1)
+                print("📤 Published to Fogwing:", payload)
+                print("📦 Publish result:", result.rc)
             else:
-                  print("MQTT not connected - cannot send data")
-            #results.append(cleaned_data)
-            #print(cleaned_data)  # Later: publish to Fogwing here
+                print("⚠️ MQTT not connected — skipping publish")
+
+            results.append(cleaned_data)
 
     return jsonify({"status": "success", "processed": len(results)}), 200
