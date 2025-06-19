@@ -67,7 +67,7 @@ def webhook():
                         "distance_cm": "28"
                     }   
                 }
-            else
+            else:
                 print("MQTT not connected - cannot send data")
             
             # send to Fogwing
